@@ -257,7 +257,6 @@
             -webkit-transform: scale(0.96);
             transform: scale(0.96);
         }
-        /* 排序模式退出按钮 */
         .exit-sort-btn {
             background: #ff9800;
             color: white;
@@ -622,23 +621,23 @@
     let appData = { items: [] };
     let currentPath = [];
     let searchKeyword = "";
-    // 【修改】默认搜索引擎设置为 Yandex
-    let currentEngineId = "yandex";
+    
+    // 根据“代码二”的要求，默认搜索引擎为必应
+    let currentEngineId = "bing";
     let mainSortable = null;
     let activeContextMenu = null;
     let sortMode = false;
     let exitSortBtn = null;
 
-    // 【修改】搜索引擎列表：新增 Yandex 并放在最前面作为默认，原有的必应、谷歌、百度、搜狗依次下移
+    // 根据“代码二”的要求，必应第一位，Yandex 第二位
     let engineList = [
-        { id: "yandex", name: "Yandex", url: "https://yandex.com/search/?text={q}" },
         { id: "bing", name: "必应", url: "https://www.bing.com/search?q={q}" },
+        { id: "yandex", name: "Yandex", url: "https://yandex.com/search/?text={q}" },
         { id: "google", name: "谷歌", url: "https://www.google.com/search?q={q}" },
         { id: "baidu", name: "百度", url: "https://www.baidu.com/s?wd={q}" },
         { id: "sogou", name: "搜狗", url: "https://www.sogou.com/web?query={q}" }
     ];
 
-    // 退出排序模式
     function exitSortMode() {
         sortMode = false;
         if (exitSortBtn) {
@@ -677,7 +676,6 @@
                 }
             } catch(e) {}
         }
-        // 确保 currentEngineId 有效，若无效则设为第一个
         if (!engineList.find(e => e.id === currentEngineId) && engineList.length) {
             currentEngineId = engineList[0].id;
         }
@@ -856,6 +854,7 @@
     function saveToLocal() {
         localStorage.setItem('nav_dashboard_data', JSON.stringify({ items: appData.items }));
     }
+    
     function loadData() {
         const saved = localStorage.getItem('nav_dashboard_data');
         if (saved) {
@@ -867,49 +866,38 @@
                 }
             } catch(e) { console.warn(e); }
         }
-        // 以下为默认初始数据，与原代码完全保持一致
-        const commonToolsFolder = {
-            id: genId(),
-            type: 'folder',
-            name: '常用工具',
-            children: [
-                {
-                    id: genId(),
-                    type: 'folder',
-                    name: 'AI工具',
-                    children: [
-                        { id: genId(), type: 'link', name: 'ChatGPT', url: 'https://chat.openai.com' }
-                    ]
-                },
-                { id: genId(), type: 'link', name: '百度网盘', url: 'https://pan.baidu.com' }
-            ]
-        };
+        
+        // 【核心修改区】完全按照 Word 文档《网址合集.doc》中的链接重新生成
         const orderedLinks = [
             { name: "谷歌", url: "https://www.google.com.hk/?hl=zh-cn" },
-            { name: "美版必应", url: "https://www.bing.com/?mkt=en-US&setlang=en" },
+            { name: "必应", url: "https://www.bing.com" },
             { name: "Yandex", url: "https://yandex.com" },
+            { name: "Yandex", url: "https://ya.ru/" },
             { name: "OpenAI", url: "https://chat.openai.com/chat" },
             { name: "apkpure", url: "https://apkpure.com/cn/" },
-            { name: "github", url: "https://github.com/lxp2467475685/my-nav/settings/pages" },
-            { name: "Gitee", url: "https://gitee.com/profile/account/verification" },
-            { name: "百度云盘", url: "https://pan.baidu.com/disk/main?from=homeFlow&login_type=weixin&_at_=1778708608604#/index?category=all" },
-            { name: "阿里云盘", url: "https://www.alipan.com/sign/in?ad__pass__q__desktopLogin=true&back=https%3A%2F%2Fwww.alipan.com%2Fdrive%2Fhome" },
+            { name: "Github", url: "https://github.com/login" },
+            { name: "Gmail", url: "https://mail.google.com/mail/mu/mp/201/#tl/priority/%5Esmartlabel_personal" },
+            { name: "163 mail", url: "https://smart.mail.163.com/login.htm" },
+            { name: "IP查询", url: "https://ip.net.coffee/ip/" },
             { name: "423down", url: "https://www.423down.com/" },
-            { name: "果核剥壳", url: "https://www.ghxi.com" },
+            { name: "果核剥壳", url: "https://www.ghxi.com/" },
             { name: "火哥分享", url: "https://www.firepx.com" },
             { name: "Z-Library电子图书馆", url: "https://zh.1lib.sk/" },
             { name: "安娜电子图书馆", url: "https://zh.annas-archive.pk/" },
+            { name: "百度云盘", url: "https://pan.baidu.com/disk/main?from=homeFlow&login_type=weixin&_at_=1778708608604#/index?category=all" },
+            { name: "阿里云盘", url: "https://www.alipan.com/sign/in?ad__pass__q__desktopLogin=true&back=https%3A%2F%2Fwww.alipan.com%2Fdrive%2Fhome" },
+            { name: "Atom", url: "https://svc955.github.io/" },
+            { name: "Atom", url: "https://github.com/svc955/svc955.github.io" },
             { name: "哔哩哔哩", url: "https://www.bilibili.com/?spm_id_from=333.788.0.0" },
             { name: "插件 - Crx搜搜", url: "https://www.crxsoso.com/addon/category/Edge-Extensions" }
         ];
+
         const linkItems = orderedLinks.map(function(link) {
             return { id: genId(), type: 'link', name: link.name, url: link.url };
         });
-        appData.items = [commonToolsFolder].concat(linkItems);
+        appData.items = linkItems;
     }
-    // 后续所有函数：findItemById, getCurrentContainer, getCurrentDisplayItems, deleteCurrentItem, editCurrentItem, moveItemToFolder, moveToRoot, getAllMovableFolders, buildBreadcrumb, showContextMenu, hideContextMenu, showMoveDialog, render, initSortableForCurrentView, addNewWebsite, addNewFolder, exportModule, importModule, goBackToHome, bindEvents, init 均与原代码完全一致
-    // ... 为保证文件完整且不破坏任何逻辑，此处保留所有原有函数实现（篇幅原因略去中间部分，实际代码完整无缺）
-    // 为确保可运行，以下为必须的剩余函数完整实现（原样保留）
+
     function findItemById(id, items) { if (!items) items = appData.items; for (var i = 0; i < items.length; i++) { var item = items[i]; if (item.id === id) return item; if (item.type === 'folder' && item.children) { var found = findItemById(id, item.children); if (found) return found; } } return null; }
     function getCurrentContainer() { if (currentPath.length === 0) return appData.items; var current = appData.items; for (var i = 0; i < currentPath.length; i++) { var folderId = currentPath[i]; var folder = current.find(function(it) { return it.id === folderId && it.type === 'folder'; }); if (!folder || !folder.children) return []; current = folder.children; } return current; }
     function getCurrentDisplayItems() { var container = getCurrentContainer(); var items = container.slice(); if (searchKeyword.trim() !== "") { var kw = searchKeyword.trim().toLowerCase(); items = items.filter(function(item) { if (item.type === 'link') { return item.name.toLowerCase().indexOf(kw) > -1 || (item.url && item.url.toLowerCase().indexOf(kw) > -1); } else { return item.name.toLowerCase().indexOf(kw) > -1; } }); } return items; }
